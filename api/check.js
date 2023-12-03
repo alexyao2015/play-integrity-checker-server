@@ -3,10 +3,10 @@ const app = express();
 import { readFileSync } from "fs";
 import process from "process";
 
-process.on('SIGTERM', () => {
-  console.info("Interrupted")
-  process.exit(0)
-})
+process.on("SIGTERM", () => {
+  console.info("Interrupted");
+  process.exit(0);
+});
 
 import { google } from "googleapis";
 const playintegrity = google.playintegrity("v1");
@@ -39,6 +39,7 @@ async function getTokenResponse(token) {
 }
 
 app.get("/api/check", async (req, res) => {
+  console.log("Request received");
   const { token = "none" } = req.query;
 
   if (token == "none") {
