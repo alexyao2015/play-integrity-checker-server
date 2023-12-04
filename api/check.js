@@ -8,8 +8,7 @@ process.on("SIGTERM", () => {
   process.exit(0);
 });
 
-import { google } from "googleapis";
-const playintegrity = google.playintegrity("v1");
+import { auth, playintegrity } from "@googleapis/playintegrity";
 
 const packageName = process.env.PACKAGE_NAME;
 const privatekey = JSON.parse(
@@ -17,16 +16,13 @@ const privatekey = JSON.parse(
 );
 
 async function getTokenResponse(token) {
-  let jwtClient = new google.auth.JWT(
-    privatekey.client_email,
-    null,
-    privatekey.private_key,
-    ["https://www.googleapis.com/auth/playintegrity"]
-  );
+  const client = auth.fromJSON(privatekey);
 
-  google.options({ auth: jwtClient });
+  client.scopes = ["https://www.googleapis.com/auth/playintegrity"];
 
-  const res = await playintegrity.v1.decodeIntegrityToken({
+  const pi = playintegrity({ version: "v1", auth: client });
+
+  const res = await pi.v1.decodeIntegrityToken({
     packageName: packageName,
     requestBody: {
       integrityToken: token,
